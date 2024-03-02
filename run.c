@@ -1,6 +1,10 @@
 #include<stdio.h>//output，readfile,
 #include<stdlib.h>//Memory Allocation and use
 #include<string.h>//Memory Copy Text Conversion
+//all value
+#define in_ *(int*)
+char *msn,*t;
+int end;
 
 //function
 #define in *(int*)
@@ -42,9 +46,7 @@ void tochar(void){
 }
 
 //Binary Runer
-#define in_ *(int*)
-char *msn,*t;
-int end;
+
 int main(int argc, char const *argv[])
 {
 	//openFile
@@ -60,7 +62,8 @@ int main(int argc, char const *argv[])
 	end=ftell(f);
 	fseek(f,0,SEEK_SET);
 	fread(msn,end,1,f);
-	//openFile
+	
+	//main
 	void (*fn[25])()={pint,pint,pluss,equal,less,add,plus,large,nt,tochar};
 	for (int F = 0; F < end; F+=16)
 	{st:;
@@ -85,4 +88,3 @@ int main(int argc, char const *argv[])
 	}
 	return 0;
 }
-
