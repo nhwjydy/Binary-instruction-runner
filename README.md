@@ -6,5 +6,9 @@
   batch:  
       run.bat  
   terminal:  
-     'gcc main.c func.c -o r.exe'
+     'gcc main.c -o bir.exe'
+```
+# Use
+``` bash
+bir.exe plugen_table.bin
 ```
