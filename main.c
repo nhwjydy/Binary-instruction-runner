@@ -1,90 +1,84 @@
-#include<stdio.h>//output，readfile,
-#include<stdlib.h>//Memory Allocation and use
-#include<string.h>//Memory Copy Text Conversion
-//all value
-#define in_ *(int*)
-char *msn,*t;
-int end;
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-//function
-#define in *(int*)
-#define e(a) (msn+*(int*)t+a)
-#define b (msn+*(int*)(t+4))
-#define p (msn+*(int*)t)
-void pint(void){
-	printf("%s",p);
+#define ch (*(char*))
+#define in (*(int*))
+#define e(a) (t + *msn + a)
+#define b (t + *(msn + 1))
+#define p (t + *msn)
+
+int *msn, end;
+char *t;
+
+void pint(void) {
+	printf("%s", p);
 }
-void pluss(void){
-	(in p)++;
+void pluss(void) {
+	(*p)++;
 }
-void equal(void){
-	if(in p==in e(4))*b='#';
-	else *b=0;
+void equal(void) {
+	*b = (*p == *e(4)) ? 'R' : 0;
 }
-void less(void){
-	if(in p<in e(4))*b='#';
-	else *b=0;
+void less(void) {
+	*b = (*p < *e(4)) ? 'R' : 0;
 }
-void add(void){
-	in b=in p+in e(4);
+void add(void) {
+	*b = *p + *e(4);
 }
-void plus(void){
-	in b=(in p*in e(4));
+void plus(void) {
+	*b = (*p) * (*e(4));
 }
-void large(void){
-	if(in p>in e(4))*b='#';
-	else *b=0;
+void large(void) {
+	*b = (*p > *e(4)) ? 'R' : 0;
 }
-void nt(void){
-	if(*p)*p=0;
-	else *p=1;
+void nt(void) {
+	*p = *p ? 0 : 1;
 }
-void tochar(void){
-	char str[10],n=sprintf(str,"%d",in p);
-	memmove(b,str,n);
-	
+void tochar(void) {
+	char str[10];
+	int n = sprintf(str, "%d", *p);
+	memmove(b, str, n);
 }
 
-//Binary Runer
-
-int main(int argc, char const *argv[])
-{
-	//openFile
+int main(int argc, char const *argv[]) {
 	FILE *f;
-	msn=malloc(4096);     //Memory allocation parameters are specified by default
-	if(argc>1)f=fopen(argv[1],"rb");
-	else{
+	msn = malloc(256);
+	if (argc > 1) f = fopen(argv[1], "rb");
+	else {
 		printf(">.");
-		scanf("%s",msn);
-		f=fopen(msn,"rb");
+		scanf("%s", (char *)msn);
+		f = fopen((char *)msn, "rb");
 	}
-	fseek(f,0,SEEK_END);
-	end=ftell(f);
-	fseek(f,0,SEEK_SET);
-	fread(msn,end,1,f);
-	
-	//main
-	void (*fn[25])()={pint,pint,pluss,equal,less,add,plus,large,nt,tochar};
-	for (int F = 0; F < end; F+=16)
-	{st:;
-		if(in_((t=msn+F)+12)){
-			fn[in_(t+12)]();     //Pecific input and output
-		}else if (in_(t+8))
-		{
-			memmove(msn+in_(t+8),msn+in_(t),in_(t+4));     //Memory Copy
-		}else{
-			if (in_(t))
-			{
-				if (*(msn+in_(t)))
-				{
-					F=in_(t+4);     //Conditional execution jump
-					goto st;
+
+	fread(msn, 16, 1, f);
+	t = (char *)(msn = realloc(msn, *(msn + 3) ? * (msn + 2) : 4096));
+	fseek(f, 0, SEEK_END);
+	end = ftell(f);
+	fseek(f, 0, SEEK_SET);
+	fread(msn, end, 1, f);
+
+	t = (char *)msn;
+	void (*fn[])() = {pint, pint, pluss, equal, less, add, plus, large, nt, tochar};
+	while (((char *)msn - t) < end) {
+		if (*(msn + 3)) {
+			fn[*(msn + 3)]();
+		} else if (*(msn + 2)) {
+			memmove(t + * (msn + 2), t + * (msn), *(msn + 1));
+		} else {
+			if (*(msn)) {
+				if (*(t + * (msn))) {
+					msn = (int *)(t + * (msn + 1));
+					continue;
 				}
-			}else{
-				F=in_(t+4);
-				goto st;
+			} else {
+				msn = (int *)(t + * (msn + 1));
+				continue;
 			}
 		}
+		msn += 4;
 	}
+	free(msn);
+	fclose(f);
 	return 0;
 }
