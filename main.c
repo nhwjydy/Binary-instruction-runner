@@ -58,7 +58,6 @@ int main(int argc, char const *argv[]) {
 	fseek(f, 0, SEEK_SET);
 	fread(msn, end, 1, f);
 
-	t = (char *)msn;
 	void (*fn[])() = {pint, pint, pluss, equal, less, add, plus, large, nt, tochar};
 	while (((char *)msn - t) < end) {
 		if (*(msn + 3)) {
