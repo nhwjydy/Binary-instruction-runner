@@ -1,1 +1,1 @@
-gcc main.c -o bir.exe
+gcc main.c -o main.exe
