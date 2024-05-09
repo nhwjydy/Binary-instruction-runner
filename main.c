@@ -2,11 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define ch (*(char*))
-#define in (*(int*))
-#define e(a) (t + *msn + a)
-#define b (t + *(msn + 1))
-#define p (t + *msn)
+#define ch *(char*)               // *msn - current context value - input list offset
+#define in *(int*)                // t - context - Address
+#define addre(n) (t + n)          // Address + offset
+#define ek(p)    (*msn + p)       //           input list offset + offset
+#define p        (t + *msn)       // Address + input list offset 
+#define e(a)     (t + *msn + a)	  // Address + input list offset + offset
+#define bk       *(msn+1)         //           current context add one value
+#define b        (t + *(msn + 1)) // Address + current context add one value
 
 int *msn, end;
 char *t;
@@ -58,7 +61,7 @@ int main(int argc, char const *argv[]) {
 	fseek(f, 0, SEEK_SET);
 	fread(msn, end, 1, f);
 
-	void (*fn[])() = {pint, pint, pluss, equal, less, add, plus, large, nt, tochar};
+	void (*fn[])() = {NULL, pint, pluss, equal, less, add, plus, large, nt, tochar};
 	while (((char *)msn - t) < end) {
 		if (*(msn + 3)) {
 			fn[*(msn + 3)]();
