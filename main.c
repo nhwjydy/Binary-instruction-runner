@@ -80,7 +80,7 @@ int main(int argc, char const *argv[]) {
 		}
 		msn += 4;
 	}
-	free(msn);
+	free(t);
 	fclose(f);
 	return 0;
 }
