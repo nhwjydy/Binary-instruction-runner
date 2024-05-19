@@ -2,14 +2,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define ch *(char*)               // *msn - current context value - input list offset
-#define in *(int*)                // t - context - Address
-#define addre(n) (t + n)          // Address + offset
-#define ek(p)    (*msn + p)       //           input list offset + offset
-#define p        (t + *msn)       // Address + input list offset 
-#define e(a)     (t + *msn + a)	  // Address + input list offset + offset
-#define bk       *(msn+1)         //           current context add one value
-#define b        (t + *(msn + 1)) // Address + current context add one value
+#define ch *(char*)               // t - context address | msn - current context
+#define in *(int*)				
+
+#define pn   * msn                // input   value
+#define bn   *(msn + 1)           // output  value
+#define at(n) (t +   n)           // context address offset
+#define p      t + * msn          // Input   address
+#define b     (t + *(msn + 1))    // Output  address
+#define e(n)  (t + * msn + n)     // Input   address offset
+#define bi(n) (t + *(msn + 1) + n)// Output  address offset
 
 int *msn, end;
 char *t;
