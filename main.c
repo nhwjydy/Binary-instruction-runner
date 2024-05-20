@@ -8,7 +8,7 @@
 #define pn   * msn                // input   value
 #define bn   *(msn + 1)           // output  value
 #define at(n) (t +   n)           // context address offset
-#define p      t + * msn          // Input   address
+#define p     (t + * msn)         // Input   address
 #define b     (t + *(msn + 1))    // Output  address
 #define e(n)  (t + * msn + n)     // Input   address offset
 #define bi(n) (t + *(msn + 1) + n)// Output  address offset
