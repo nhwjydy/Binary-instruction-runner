@@ -50,3 +50,16 @@ main.exe example.bin
 
 Contributions are welcome! Feel free to submit issues or create Pull Requests.
 
+## License
+
+This project is released under the "No License" terms. You are free to use, copy, modify, and distribute this software for any purpose, with or without fee, and without any restrictions.
+
+**No License**
+
+To the extent possible under law, the author(s) disclaim all copyright and related or neighboring rights to this work. 
+
+**You can use, copy, modify, and distribute the work, even for commercial purposes, without asking permission.**
+
+Note: The raylib library and its associated files (e.g., `raylib.h`, `raylib-lib binary.7z`, etc.) are subject to their respective licenses as defined by the raylib project. Please make sure to comply with the terms of the raylib license when using these files.
+
+For more information about the concept of "No License", please refer to [ChooseALicense.com](https://choosealicense.com/no-permission/).
