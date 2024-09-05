@@ -1,88 +1,176 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <raylib.h> // graphics
 
-#define ch *(char*)               // t - context address | msn - current context
-#define in *(int*)				
+int *ctx, file_size; // current context buffer pointer, file size
+char *buff; // buffer pointer
+FILE *f;
 
-#define pn   * msn                // input   value
-#define bn   *(msn + 1)           // output  value
-#define at(n) (t +   n)           // context address offset
-#define p     (t + * msn)         // Input   address
-#define b     (t + *(msn + 1))    // Output  address
-#define e(n)  (t + * msn + n)     // Input   address offset
-#define bi(n) (t + *(msn + 1) + n)// Output  address offset
+#define in *(int*)
 
-int *msn, end;
-char *t;
+#define cf(n)       (ctx + n)                    // current context offset n
+#define tcn(n)      (buff + *(ctx + n))          // current context offset n address 
+#define tcnn(n,n1)  (buff + *(ctx + n) + n1)     // current context offset n address offset n1
+#define tn(n)       (buff + n)                   // context address offset n
 
-void pint(void) {
-	printf("%s", p);
+// core function
+#define add_core output, pluss, add, dec, mult, dev, \
+equal, less, big, not, and, or
+
+void output(void) {
+    printf("%s", tcn(1));
+    ctx+=1;
 }
+
 void pluss(void) {
-	(*p)++;
+    (*tcn(1))++;
+    ctx+=1;
 }
-void equal(void) {
-	*b = (*p == *e(4)) ? 'R' : 0;
-}
-void less(void) {
-	*b = (*p < *e(4)) ? 'R' : 0;
-}
+
 void add(void) {
-	*b = *p + *e(4);
+    in tcn(3) = in tcn(1) + in tcn(2);
+    ctx+=3;
 }
-void plus(void) {
-	*b = (*p) * (*e(4));
+
+void dec(void) {
+    in tcn(3) = in tcn(1) - in tcn(2);
+    ctx+=3;
 }
-void large(void) {
-	*b = (*p > *e(4)) ? 'R' : 0;
+
+void mult(void) {
+    in tcn(3) = in tcn(1) * in tcn(2);
+    ctx+=3;
 }
-void nt(void) {
-	*p = *p ? 0 : 1;
+
+void dev(void) {
+    in tcn(3) = in tcn(1) / in tcn(2);
+    ctx+=3;
 }
-void tochar(void) {
-	char str[10];
-	int n = sprintf(str, "%d", *p);
-	memmove(b, str, n);
+
+void equal(void) {
+    *tcn(3) = (in tcn(1) == in tcn(2)) ? 1 : 0;
+    ctx+=3;
 }
+
+void less(void) {
+    *tcn(3) = (in tcn(1) < in tcn(2)) ? 1 : 0;
+    ctx+=3;
+}
+
+void big(void) {
+    *tcn(3) = (in cf(1) > in cf(2)) ? 1 : 0;
+    ctx+=1;
+}
+
+void not(void) {
+    *tcn(1) = in tcn(1) ? 0 : 1;
+    ctx+=1;
+}
+
+void and(void) {
+    *tcn(3) = (in tcn(1) && in tcn(2)) ? 1 : 0;
+    ctx+=1;
+}
+
+void or(void) {
+    *tcn(3) = (in tcn(1) || in tcn(2)) ? 1 : 0;
+    ctx+=1;
+}
+
+// raylib function
+#define add_raylib InitWindow1, CloseWindow1, ToggleFullscreen1, EndDrawing1, \
+PutPixel, DrawText1, \
+WindowShouldClose1, IsMouseButtonDown1, GetMousePosition1, GetKeyPressed1
+
+void InitWindow1(void){
+    InitWindow(in cf(1), in cf(2), tcn(3));
+    ctx+=3;
+}
+
+void CloseWindow1(void){
+    CloseWindow();
+}
+
+void ToggleFullscreen1(void){
+    ToggleFullscreen();
+}
+
+void EndDrawing1(void){
+    EndDrawing();
+}
+
+void PutPixel(void){
+    DrawPixel(in tcn(1), in tcn(2), *(Color*)tcn(3));   
+    ctx+=3;
+}
+
+void DrawText1(void){
+    DrawText(tcn(1), in cf(2), in cf(3), in cf(4), *(Color*)cf(5));
+    ctx+=5;
+}
+
+void WindowShouldClose1(void){
+    *tcn(1) = WindowShouldClose();
+    ctx+=1;
+} 
+
+void IsMouseButtonDown1(void){
+    *tcn(2) = IsMouseButtonDown(*tcn(1));   
+    ctx+=1;
+}
+
+void GetMousePosition1(void){
+    in tcn(1) = GetMouseX();
+    in tcn(1) = GetMouseY();
+    ctx+=2;
+}
+
+void GetKeyPressed1(void){
+   *cf(1) = GetKeyPressed();
+   ctx+=1;
+}
+
 
 int main(int argc, char const *argv[]) {
-	FILE *f;
-	msn = malloc(256);
-	if (argc > 1) f = fopen(argv[1], "rb");
-	else {
-		printf(">.");
-		scanf("%s", (char *)msn);
-		f = fopen((char *)msn, "rb");
-	}
+    ctx = malloc(8);
 
-	fread(msn, 16, 1, f);
-	t = (char *)(msn = realloc(msn, *(msn + 3) ? * (msn + 2) : 4096));
-	fseek(f, 0, SEEK_END);
-	end = ftell(f);
-	fseek(f, 0, SEEK_SET);
-	fread(msn, end, 1, f);
+    if (argc > 1) {
+        f = fopen(argv[1], "rb");
+    } else {
+        printf("file:");
+        char filename[256];
+        *(filename + strlen(fgets(filename, sizeof(filename), stdin)) - 1) = 0;
+        f = fopen(filename, "rb");
+    }
 
-	void (*fn[])() = {NULL, pint, pluss, equal, less, add, plus, large, nt, tochar};
-	while (((char *)msn - t) < end) {
-		if (*(msn + 3)) {
-			fn[*(msn + 3)]();
-		} else if (*(msn + 2)) {
-			memmove(t + * (msn + 2), t + * (msn), *(msn + 1));
-		} else {
-			if (*(msn)) {
-				if (*(t + * (msn))) {
-					msn = (int *)(t + * (msn + 1));
-					continue;
-				}
-			} else {
-				msn = (int *)(t + * (msn + 1));
-				continue;
-			}
-		}
-		msn += 4;
-	}
-	free(t);
-	fclose(f);
-	return 0;
+    fread(ctx, 8, 1, f);
+    fseek(f, 0, SEEK_END);
+    file_size = ftell(f);
+    ctx = *(ctx) == -1 ? (int *)(buff = malloc((file_size = *(ctx + 1)))) + 2 : (int *)(buff = malloc(file_size));
+    fseek(f, 0, SEEK_SET);
+    fread(ctx, file_size, 1, f);
+
+    void (*fn[])() = {NULL, NULL, add_core, add_raylib};
+    while (((char *)ctx - buff) < file_size) {
+        if (*ctx) {
+            if (*ctx == 1) {
+                memmove(buff + *(ctx + 2), buff + *(ctx), *(ctx + 1));
+                ctx += 4;
+            } else {
+                fn[*ctx]();
+                ctx += 1;
+            }
+        } else {
+            if (*(ctx + 1) == 0 || *(buff + *(ctx + 1)) != 0) {
+                ctx = (int *)(buff + *(ctx + 2));
+                continue;
+            }
+			ctx += 3;
+        }
+    }
+    
+    free(buff);
+    fclose(f);
+    return 0;
 }
