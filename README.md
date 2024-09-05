@@ -54,5 +54,3 @@ Contributions are welcome! Feel free to submit issues or create Pull Requests.
 
 This project is licensed under the [MIT License](LICENSE).
 ```
-
-This README provides a clear overview of your project in English and highlights its features, usage, and how others can contribute.
